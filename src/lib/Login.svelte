@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
     import { currentUser, pb } from './pocketbase';
     import Messages from "./Messages.svelte";
   
@@ -60,4 +60,18 @@
       <button on:click={signUp}>Sign Up</button>
       <button on:click={login}>Login</button>
     </form>
-  {/if}
+  {/if} -->
+
+<script lang="ts">
+  import Messages from "./Messages.svelte";
+</script>
+
+<div class="md:container md:mx-auto">
+  <div class="flex space-x-4">
+      <h1 class="text-white px-14">PocketChat</h1>
+  </div><br><hr><br>
+
+  <div>
+      <Messages />
+  </div>
+</div>

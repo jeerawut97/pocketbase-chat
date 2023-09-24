@@ -2,31 +2,55 @@
     import { onMount, onDestroy } from 'svelte';
     import { currentUser, pb } from './pocketbase';
     import { Record } from 'pocketbase';
-  
+
+    const importData = [
+      {
+        "id": "748ccw3vczzpbfd",
+        "name": "messages",
+        "type": "base",
+        "system": false,
+        "schema": [
+            {
+                "id": "qukooojo",
+                "name": "text",
+                "type": "text",
+                "system": false,
+                "required": true,
+                "options": {
+                    "min": 1,
+                    "max": null,
+                    "pattern": ""
+                }
+            }
+        ],
+        "indexes": [],
+        "listRule": "",
+        "viewRule": "",
+        "createRule": "",
+        "updateRule": null,
+        "deleteRule": null,
+        "options": {}
+      }
+    ];
     let newMessage: string;
     let messages = [];
     let unsubscribe: () => void;
-  
+
     onMount(async () => {
-      // Get initial messages
+      await pb.admins.authWithPassword('admin@admin.com', 'admin@12345678');
+      await pb.collections.import(importData, false);
+
       let resultList = await pb.collection('messages').getList(1, 8, {
           sort: '-created',
         });
       messages = resultList.items.reverse();
-      // console.log('message ' + messages)
-  
-      // Subscribe to realtime messages
       unsubscribe = await pb
         .collection('messages')
         .subscribe('*', async ({ action, record }) => {
           if (action === 'create') {
-            // Fetch associated user
-            // const user = await pb.collection('users').getOne(record.user);
-            // record.expand = { user};
             if (messages.length >= 8) {
               messages.shift()
             }
-            // messages.push(record)
             messages = [...messages, record];
           }
           if (action === 'delete') {
@@ -35,7 +59,6 @@
         });
     });
   
-    // Unsubscribe from realtime messages
     onDestroy(() => {
       unsubscribe?.();
     });
